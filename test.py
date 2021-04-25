@@ -22,14 +22,14 @@ encoder = UniversalEncoder("tstsv.ddns.net", 8501)
 #encoder = UniversalEncoder("localhost", 8501)
 
 #example about rebuild index function
-#r = encoder.build_index(data,False)
+r = encoder.build_index(data,False)
 
 #print(r[0].shape)
 #example about remove a closest semantic index
 #   Note: you need to search first to make sure the data to delete is correct
 #   otherwise, the closest semantic index is deleted and cannot be restored
-#encoder.remove_index("accounts")
+#encoder.remove_index("distance between two stars")
 
 #example about search function
-r = encoder.search(data,"distance between two planets",2)
+r = encoder.search(data,"distance between two stars",2)
 [print(i) for i in r]

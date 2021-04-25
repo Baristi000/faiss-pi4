@@ -41,28 +41,37 @@ class UniversalEncoder():
         return setting.index_on_ram
     
     def search(self,data, query, numb_result:int=1):
-        query_vector = self.encode([query])[0]                            #converter data to vectors
-        cos = nn.CosineSimilarity(dim=1, eps=1e-6)
+        query_vector = self.encode([query])[0]                              #converter data to vectors
+        cos = nn.CosineSimilarity(dim=1, eps=1e-6)                          #init comparse functions
 
-        if setting.index_on_ram == []:
+        if setting.index_on_ram == []:                                      
             setting.index_on_ram = torch.load(self.storage_dir)
         temp_vectors = setting.index_on_ram.copy()
-        distances = []
+        distances = []                                                      #comparse distances
         for i in range(len(temp_vectors)):
             distances.append(float(cos(temp_vectors[i], query_vector)))
-        index_results = []
+        index_results = []                                                  #get the top n index has closest semantics
         min_distance = min(distances)
         for i in range(numb_result):
             index = distances.index(max(distances))
             index_results.append(index)
             distances[index] = min_distance
-        result = []
+        result = []                                                         #get top n result
         for i in index_results:
             result.append(data[i])
         return result
     
     def remove_index(self, query):
-        query_vector = self.encode([query])[0]
-        setting.index_on_ram.pop(setting.index_on_ram.index(query_vector))
+        query_vector = self.encode([query])[0]                              #converter data to vectors
+        cos = nn.CosineSimilarity(dim=1, eps=1e-6)                          #init comparse functions
+
+        if setting.index_on_ram == []:                                      
+            setting.index_on_ram = torch.load(self.storage_dir)
+        temp_vectors = setting.index_on_ram.copy()
+        distances = []                                                      #comparse distances
+        for i in range(len(temp_vectors)):
+            distances.append(float(cos(temp_vectors[i], query_vector)))
+        index = distances.index(max(distances))                             #get the delete index
+        setting.index_on_ram.pop(index)
         torch.save(setting.index_on_ram,self.storage_dir)
         return setting.index_on_ram
