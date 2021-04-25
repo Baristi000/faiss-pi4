@@ -37,7 +37,11 @@ class UniversalEncoder():
         if append == True:
             setting.index_on_ram = torch.load(self.storage_dir)
         setting.index_on_ram.extend(self.encode(data))                      #converter data to vectors
-        torch.save(setting.index_on_ram,self.storage_dir)
+        try:
+            torch.save(setting.index_on_ram,self.storage_dir)
+        except:
+                os.mkdir(storage_dir.split("/")[1])
+                torch.save(setting.index_on_ram,self.storage_dir)
         return setting.index_on_ram
     
     def search(self,data, query, numb_result:int=1):
