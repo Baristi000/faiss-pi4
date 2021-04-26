@@ -40,7 +40,7 @@ class UniversalEncoder():
         try:
             torch.save(setting.index_on_ram,self.storage_dir)
         except:
-                os.mkdir(storage_dir.split("/")[1])
+                os.mkdir(self.storage_dir.split("/")[1])
                 torch.save(setting.index_on_ram,self.storage_dir)
         return setting.index_on_ram
     
