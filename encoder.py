@@ -3,11 +3,12 @@ import requests, torch, os
 from config import setting
 import numpy as np
 from torch import nn
+import os
 
 class UniversalEncoder():
     FEATURE_SIZE = 512
     BATCH_SIZE = 32
-    storage_dir = "./search_data/faiss.index"
+    storage_dir = str(os.path.realpath("."))+"/search_data/faiss.index"
 
     def __init__(self, host, port):
         self.server_url = "http://{host}:{port}/v1/models/model:predict".format(
@@ -40,7 +41,7 @@ class UniversalEncoder():
         try:
             torch.save(setting.index_on_ram,self.storage_dir)
         except:
-                os.mkdir(self.storage_dir.split("/")[1])
+                os.mkdir(self.storage_dir.split("/")[-2])
                 torch.save(setting.index_on_ram,self.storage_dir)
         return setting.index_on_ram
     
