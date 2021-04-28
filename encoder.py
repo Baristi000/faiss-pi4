@@ -1,20 +1,31 @@
 import numpy as np
-import requests, torch, os
-from config import setting
+import requests, torch, os, json
 import numpy as np
 from torch import nn
-import os
+from config import setting
 
 class UniversalEncoder():
     FEATURE_SIZE = 512
     BATCH_SIZE = 32
-    storage_dir = str(os.path.realpath("."))+"/search_data/faiss.index"
+    storage_dir = str(os.path.realpath("."))+"/search_data/faiss.json"
 
     def __init__(self, host, port):
         self.server_url = "http://{host}:{port}/v1/models/model:predict".format(
             host = host,
             port = port
         )
+        
+    @staticmethod
+    def load_index(dir:str):
+        file = open("test.json","r",buffering=1)
+        vectors = {}
+        for line in file:
+            vectors.update(json.load(io.StringIO(line)))
+        return vectors
+
+    @staticmethod
+    def save_index(vectors,dir:str):
+        json.dump(vectors, open("test.json","a"))
 
     @staticmethod
     def _standardized_input(sentence:str):
@@ -23,6 +34,7 @@ class UniversalEncoder():
     def encode(self,data):
         data = [self._standardized_input(sentence=sentence) for sentence in data]
         all_vectors = []
+        result = {}
         for i in range(0, len(data), self.BATCH_SIZE):
             batch = data[i:i+self.BATCH_SIZE]
             res = requests.post(
@@ -31,13 +43,16 @@ class UniversalEncoder():
             )
             if not res.ok:
                 print("FALSE")
-            all_vectors += torch.transpose(torch.Tensor([list(res.json()["predictions"])]),0,1)
-        return all_vectors
+            vectors = [list(res.json()["predictions"])]
+            all_vectors += torch.transpose(torch.Tensor(vectors),0,1)
+
+        [result.update({data[i]:all_vectors[i].tolist()}) for i in range(len(data))]
+        return result
 
     def build_index(self, data:list, append:bool=True):
+        new_vectors = self.encode(data)
         if append == True:
-            setting.index_on_ram = torch.load(self.storage_dir)
-        setting.index_on_ram.extend(self.encode(data))                      #converter data to vectors
+            setting.index_on_ram = ()
         try:
             torch.save(setting.index_on_ram,self.storage_dir)
         except:
@@ -80,3 +95,5 @@ class UniversalEncoder():
         setting.index_on_ram.pop(index)
         torch.save(setting.index_on_ram,self.storage_dir)
         return setting.index_on_ram
+
+
