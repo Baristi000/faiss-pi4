@@ -3,6 +3,7 @@ import requests, torch, os, json
 import numpy as np
 from torch import nn
 from config import setting
+import fastapi
 
 class UniversalEncoder():
     FEATURE_SIZE = 512
