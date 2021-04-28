@@ -3,6 +3,7 @@ import requests, torch, os, json
 import numpy as np
 from torch import nn
 from config import setting
+import fastapi
 
 class UniversalEncoder():
     FEATURE_SIZE = 512
@@ -95,5 +96,7 @@ class UniversalEncoder():
         setting.index_on_ram.pop(index)
         torch.save(setting.index_on_ram,self.storage_dir)
         return setting.index_on_ram
+
+
 
 
