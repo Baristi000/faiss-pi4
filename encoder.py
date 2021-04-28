@@ -97,3 +97,5 @@ class UniversalEncoder():
         return setting.index_on_ram
 
 
+
+
